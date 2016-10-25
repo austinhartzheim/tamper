@@ -16,6 +16,7 @@ service: tamper-server
 provider:
   name: aws
   runtime: python2.7
+  memorySize: 128  # set a default memory size
 
 # you can overwrite defaults here
 #  stage: dev
@@ -45,6 +46,10 @@ provider:
 functions:
   hello:
     handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
