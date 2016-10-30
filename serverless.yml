@@ -18,6 +18,12 @@ provider:
   runtime: python2.7
   memorySize: 128  # set a default memory size
 
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "sns:*"
+      Resource: { "Ref" : "SnsAlertTopic"}
+
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -50,6 +56,13 @@ functions:
       - http:
           path: hello
           method: get
+  boxopened:
+    handler: handler.event_box_opened
+    events:
+      - http:
+          path: event/box_opened
+          method: get
+
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -64,8 +77,21 @@ functions:
 #      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
+resources:
+  Resources:
+    SnsAlertTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: tamper-server-alerts
+        TopicName: tamper-server-alerts
+        Subscription: ${file(config.yml):Subscriptions.Subscription}
+  Outputs:
+    SnsAlertTopicArn:
+      Description: The ARN for tamper-server-alerts
+      Value:
+        Fn::GetAtt:
+          - "SnsAlertTopic"
+          - "TopicName"
 #    NewResource:
 #      Type: AWS::S3::Bucket
 #      Properties:

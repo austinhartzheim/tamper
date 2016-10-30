@@ -1,0 +1,3 @@
+Subscriptions:
+  - Subscription:
+    - {Endpoint: email@example.com, Protocol: email}

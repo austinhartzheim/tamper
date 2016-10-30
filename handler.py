@@ -1,8 +1,12 @@
 import json
 import time
 
-def hello(event, context):
+import boto3
 
+SNS_ALERTS_ARN = 'arn:aws:sns:us-east-1:383893927536:tamper-server-alerts'
+
+
+def hello(event, context):
     body = {
         "timestamp": time.time(),
         "event": event
@@ -13,10 +17,13 @@ def hello(event, context):
         "body": json.dumps(body, indent=2)
     }
 
-    # Use this code if you don't use the http event with the LAMBDA-PROXY integration
-    """
+
+def event_box_opened(event, context):
+    sns = boto3.client('sns')
+    sns.publish(Message='Box opened at timestamp %i.' % time.time(),
+                TopicArn=SNS_ALERTS_ARN)
+
     return {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "event": event
+        'statusCode': 200,
+        'body': '{}'
     }
-    """
